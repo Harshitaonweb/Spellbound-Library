@@ -1,13 +1,17 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userRepo = require('../repositories/userRepository');
+const { generateUniqueUsername } = require('../utils/usernameGenerator');
 
 const signup = async ({ name, email, password }) => {
   const existing = await userRepo.findByEmail(email);
   if (existing) throw Object.assign(new Error('Email already in use'), { status: 409 });
 
+  // Generate unique Hogwarts-themed username
+  const username = await generateUniqueUsername();
+
   const password_hash = await bcrypt.hash(password, 12);
-  const user = await userRepo.create({ name, email, password_hash });
+  const user = await userRepo.create({ username, name, email, password_hash });
   return { user, token: signToken(user.id) };
 };
 

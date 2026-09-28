@@ -24,15 +24,6 @@ function AppInner() {
   // Global magical sounds
   useSounds();
 
-  // Handle redirect back from Google OAuth
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('auth') === 'success') {
-      refetch();
-      window.history.replaceState({}, '', '/');
-    }
-  }, []);
-
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: 16, background: '#080608' }}>

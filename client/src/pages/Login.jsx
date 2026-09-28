@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import GoogleButton from '../components/GoogleButton';
 
 export default function Login({ onSwitch }) {
   const { login } = useAuth();
@@ -25,9 +24,6 @@ export default function Login({ onSwitch }) {
           <h1>Spellbound Library</h1>
           <p>Enter the Wizarding Library</p>
         </div>
-
-        <GoogleButton label="Enter via Google Floo Network" />
-        <div className="divider">or use your wand</div>
 
         {error && <div className="error-msg">{error}</div>}
 

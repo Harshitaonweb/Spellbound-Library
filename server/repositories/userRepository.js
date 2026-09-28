@@ -5,20 +5,25 @@ const findByEmail = async (email) => {
   return rows[0];
 };
 
+const findByUsername = async (username) => {
+  const { rows } = await db.query('SELECT * FROM users WHERE username = $1', [username]);
+  return rows[0];
+};
+
 const findById = async (id) => {
   const { rows } = await db.query(
-    'SELECT id, name, email, created_at FROM users WHERE id = $1',
+    'SELECT id, username, name, email, created_at FROM users WHERE id = $1',
     [id]
   );
   return rows[0];
 };
 
-const create = async ({ name, email, password_hash }) => {
+const create = async ({ username, name, email, password_hash }) => {
   const { rows } = await db.query(
-    'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, name, email, created_at',
-    [name, email, password_hash]
+    'INSERT INTO users (username, name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, username, name, email, created_at',
+    [username, name, email, password_hash]
   );
   return rows[0];
 };
 
-module.exports = { findByEmail, findById, create };
+module.exports = { findByEmail, findByUsername, findById, create };
