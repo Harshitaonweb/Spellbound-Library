@@ -27,6 +27,19 @@ export default function Signup({ onSwitch }) {
 
         {error && <div className="error-msg">{error}</div>}
 
+        <div className="info-box" style={{
+          background: 'rgba(201, 168, 76, 0.1)',
+          border: '1px solid rgba(201, 168, 76, 0.3)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
+          fontSize: '14px',
+          color: 'rgba(201, 168, 76, 0.9)',
+          textAlign: 'center'
+        }}>
+          ✨ You'll be assigned a magical Hogwarts username automatically!
+        </div>
+
         <form onSubmit={submit}>
           <div className="form-group">
             <label className="form-label">Wizard Name</label>
