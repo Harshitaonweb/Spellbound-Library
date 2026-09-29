@@ -25,7 +25,13 @@ export default function Signup({ onSwitch }) {
     e.preventDefault();
     setLoading(true); setError('');
     try {
-      await signup(form);
+      // If no username provided, generate one
+      const signupData = { ...form };
+      if (!signupData.username || signupData.username.trim() === '') {
+        const { data } = await generateUsername();
+        signupData.username = data.username;
+      }
+      await signup(signupData);
     } catch (e) {
       setError(e.response?.data?.error || 'Enrollment failed. Try again.');
     } finally { setLoading(false); }
@@ -45,14 +51,13 @@ export default function Signup({ onSwitch }) {
 
         <form onSubmit={submit}>
           <div className="form-group">
-            <label className="form-label">Magical Username</label>
+            <label className="form-label">Magical Username (Optional)</label>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <input 
                 className="input" 
-                placeholder="e.g. Harry_Seeker_123"
+                placeholder="Click 'Random' to generate"
                 value={form.username} 
                 onChange={(e) => setForm({ ...form, username: e.target.value })} 
-                required
                 minLength={3}
                 maxLength={50}
                 pattern="[a-zA-Z0-9_]+"
@@ -86,7 +91,7 @@ export default function Signup({ onSwitch }) {
               </button>
             </div>
             <small style={{ color: 'rgba(201, 168, 76, 0.6)', fontSize: '12px', marginTop: '4px', display: 'block' }}>
-              Letters, numbers, and underscores only
+              Leave empty to auto-generate, or click 'Random' for a magical name
             </small>
           </div>
 

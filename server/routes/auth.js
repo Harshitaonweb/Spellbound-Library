@@ -6,7 +6,7 @@ const { z } = require('zod');
 const { generateRandomUsername } = require('../utils/usernameGenerator');
 
 const signupSchema = z.object({
-  username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+  username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores').optional(),
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(8),

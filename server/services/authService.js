@@ -6,8 +6,11 @@ const signup = async ({ username, name, email, password }) => {
   const existingEmail = await userRepo.findByEmail(email);
   if (existingEmail) throw Object.assign(new Error('Email already in use'), { status: 409 });
 
-  const existingUsername = await userRepo.findByUsername(username);
-  if (existingUsername) throw Object.assign(new Error('Username already taken'), { status: 409 });
+  // Check username only if provided
+  if (username) {
+    const existingUsername = await userRepo.findByUsername(username);
+    if (existingUsername) throw Object.assign(new Error('Username already taken'), { status: 409 });
+  }
 
   const password_hash = await bcrypt.hash(password, 12);
   const user = await userRepo.create({ username, name, email, password_hash });
