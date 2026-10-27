@@ -10,7 +10,6 @@ const logger = require('./config/logger');
 
 const app = express();
 
-// Security & parsing
 app.use(helmet());
 app.use(cors({
   origin: [
@@ -25,11 +24,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-// Rate limiting
-app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
-app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, max: 1000 }));
-
-// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/resources', require('./routes/resources'));
 app.use('/api/search', require('./routes/search'));
@@ -38,14 +32,6 @@ app.use('/api/groups', require('./routes/groups'));
 app.use('/api/upload', require('./routes/upload'));
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
-
-// Keep-alive ping for Render free tier
-if (process.env.NODE_ENV === 'production') {
-  setInterval(() => {
-    const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 5001}`;
-    fetch(`${url}/health`).catch(() => {});
-  }, 10 * 60 * 1000); // every 10 minutes
-}
 
 app.use(errorHandler);
 
