@@ -6,13 +6,17 @@ export default function Login({ onSwitch }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true); setError('');
-    try { await login(form); }
-    catch (e) { setError(e.response?.data?.error || 'The password is incorrect, young wizard.'); }
-    finally { setLoading(false); }
+    try { 
+      await login(form); 
+    } catch (e) { 
+      const errorMsg = e.response?.data?.error || 'Login failed. Please try again.';
+      setError(errorMsg);
+    } finally { setLoading(false); }
   };
 
   return (
@@ -35,8 +39,34 @@ export default function Login({ onSwitch }) {
           </div>
           <div className="form-group">
             <label className="form-label">Secret Incantation</label>
-            <input className="input" type="password" placeholder="••••••••"
-              value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+            <div style={{ position: 'relative' }}>
+              <input 
+                className="input" 
+                type={showPassword ? 'text' : 'password'} 
+                placeholder="••••••••"
+                value={form.password} 
+                onChange={(e) => setForm({ ...form, password: e.target.value })} 
+                required 
+                style={{ paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  opacity: 0.7,
+                }}
+              >
+                {showPassword ? '🔒' : '👁️'}
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary"
             style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} disabled={loading}>

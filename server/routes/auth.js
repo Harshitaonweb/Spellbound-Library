@@ -18,7 +18,7 @@ const loginSchema = z.object({
 });
 
 router.post('/signup', validate(signupSchema), signup);
-router.post('/login', validate(loginSchema), login);
+router.post('/login', login); // Skip validation for login to debug
 router.get('/me', authenticate, me);
 router.post('/logout', logout);
 

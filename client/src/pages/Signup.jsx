@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { generateUsername } from '../services/api';
+import api from '../services/api';
 
 export default function Signup({ onSwitch }) {
   const { signup } = useAuth();
@@ -8,12 +8,15 @@ export default function Signup({ onSwitch }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleGenerateUsername = async () => {
     setGenerating(true);
     try {
-      const { data } = await generateUsername();
-      setForm({ ...form, username: data.username });
+      // Direct API call without the /api prefix since baseURL already includes it
+      const response = await api.get('/auth/generate-username');
+      console.log('Generated username:', response.data);
+      setForm(prev => ({ ...prev, username: response.data.username }));
     } catch (e) {
       console.error('Failed to generate username:', e);
     } finally {
@@ -28,12 +31,13 @@ export default function Signup({ onSwitch }) {
       // If no username provided, generate one
       const signupData = { ...form };
       if (!signupData.username || signupData.username.trim() === '') {
-        const { data } = await generateUsername();
-        signupData.username = data.username;
+        const response = await api.get('/auth/generate-username');
+        signupData.username = response.data.username;
       }
       await signup(signupData);
     } catch (e) {
-      setError(e.response?.data?.error || 'Enrollment failed. Try again.');
+      const errorMsg = e.response?.data?.error || 'Enrollment failed. Please try again.';
+      setError(errorMsg);
     } finally { setLoading(false); }
   };
 
@@ -107,8 +111,35 @@ export default function Signup({ onSwitch }) {
           </div>
           <div className="form-group">
             <label className="form-label">Secret Incantation</label>
-            <input className="input" type="password" placeholder="Min. 8 characters"
-              value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+            <div style={{ position: 'relative' }}>
+              <input 
+                className="input" 
+                type={showPassword ? 'text' : 'password'} 
+                placeholder="Min. 8 characters"
+                value={form.password} 
+                onChange={(e) => setForm({ ...form, password: e.target.value })} 
+                required 
+                minLength={8}
+                style={{ paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  opacity: 0.7,
+                }}
+              >
+                {showPassword ? '🔒' : '👁️'}
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary"
             style={{ width: '100%', justifyContent: 'center', marginTop: 10 }} disabled={loading}>
