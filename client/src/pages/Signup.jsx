@@ -12,13 +12,32 @@ export default function Signup({ onSwitch }) {
 
   const handleGenerateUsername = async () => {
     setGenerating(true);
+    setError(''); // Clear any previous errors
+    
     try {
-      // Direct API call without the /api prefix since baseURL already includes it
-      const response = await api.get('/auth/generate-username');
-      console.log('Generated username:', response.data);
-      setForm(prev => ({ ...prev, username: response.data.username }));
+      console.log('Calling generate-username API...');
+      
+      // Use the full URL to be explicit
+      const response = await fetch('http://localhost:5001/api/auth/generate-username');
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Generated username:', data);
+      
+      if (data.username) {
+        setForm(prev => ({ ...prev, username: data.username }));
+        console.log('Form updated with username:', data.username);
+      } else {
+        console.error('No username in response:', data);
+        setError('Failed to generate username');
+      }
     } catch (e) {
       console.error('Failed to generate username:', e);
+      setError('Could not generate username. Please try again.');
     } finally {
       setGenerating(false);
     }
@@ -29,10 +48,11 @@ export default function Signup({ onSwitch }) {
     setLoading(true); setError('');
     try {
       // If no username provided, generate one
-      const signupData = { ...form };
+      let signupData = { ...form };
       if (!signupData.username || signupData.username.trim() === '') {
-        const response = await api.get('/auth/generate-username');
-        signupData.username = response.data.username;
+        const response = await fetch('http://localhost:5001/api/auth/generate-username');
+        const data = await response.json();
+        signupData.username = data.username;
       }
       await signup(signupData);
     } catch (e) {
