@@ -62,7 +62,10 @@ export const HOUSES = {
 const HouseContext = createContext(null);
 
 export const HouseProvider = ({ children }) => {
-  const [house, setHouseState] = useState(() => localStorage.getItem('ss_house') || null);
+  const [house, setHouseState] = useState(() => {
+    // For new users (no house selected), return null to force house selection
+    return localStorage.getItem('ss_house') || null;
+  });
 
   const setHouse = (h) => { localStorage.setItem('ss_house', h); setHouseState(h); };
   const clearHouse = () => { localStorage.removeItem('ss_house'); setHouseState(null); };
