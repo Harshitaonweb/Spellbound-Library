@@ -53,9 +53,27 @@ export default function Signup({ onSwitch }) {
         const data = await response.json();
         signupData.username = data.username;
       }
-      await signup(signupData);
+      
+      // Use direct fetch to avoid axios issues
+      const response = await fetch('http://localhost:5001/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(signupData),
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Enrollment failed');
+      }
+      
+      // If successful, reload the page to let AuthContext fetch user
+      window.location.reload();
+      
     } catch (e) {
-      const errorMsg = e.response?.data?.error || 'Enrollment failed. Please try again.';
+      console.error('Signup error:', e);
+      const errorMsg = e.message || 'Enrollment failed. Please try again.';
       setError(errorMsg);
     } finally { setLoading(false); }
   };
