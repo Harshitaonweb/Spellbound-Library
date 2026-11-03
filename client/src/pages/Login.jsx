@@ -12,9 +12,26 @@ export default function Login({ onSwitch }) {
     e.preventDefault();
     setLoading(true); setError('');
     try { 
-      await login(form); 
+      // Use direct fetch
+      const response = await fetch('http://localhost:5001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+      
+      // Success - reload to let AuthContext fetch user
+      window.location.reload();
+      
     } catch (e) { 
-      const errorMsg = e.response?.data?.error || 'Login failed. Please try again.';
+      console.error('Login error:', e);
+      const errorMsg = e.message || 'Login failed. Please try again.';
       setError(errorMsg);
     } finally { setLoading(false); }
   };
