@@ -68,8 +68,11 @@ export default function Signup({ onSwitch }) {
         throw new Error(data.error || 'Enrollment failed');
       }
       
-      // If successful, reload the page to let AuthContext fetch user
-      window.location.reload();
+      // Store token in localStorage as backup
+      localStorage.setItem('auth_token', data.token);
+      
+      // Force page reload
+      window.location.href = '/';
       
     } catch (e) {
       console.error('Signup error:', e);
