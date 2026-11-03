@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }) => {
   const signup = async (credentials) => {
     const { data } = await apiSignup(credentials);
     setUser(data.user);
+    // Clear house selection for new users to force house selection
+    localStorage.removeItem('ss_house');
     return data;
   };
 
