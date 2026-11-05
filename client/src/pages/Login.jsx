@@ -12,8 +12,9 @@ export default function Login({ onSwitch }) {
     e.preventDefault();
     setLoading(true); setError('');
     try { 
-      // Use direct fetch
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      // Use direct fetch with proper API URL
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
